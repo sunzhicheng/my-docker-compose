@@ -1,0 +1,87 @@
+version: '3'
+
+services:
+  # 配置数据库
+  db:
+    image: mysql:5.7
+    restart: always
+    container_name: "mysql_5_7"
+    environment:
+      MYSQL_ROOT_PASSWORD: idorp123456
+    ports:
+      - 3306:3306
+    volumes: 
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf:/etc/mysql
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+  # 配置redis
+  redis:
+    image: redis:3
+    container_name: "redis3"
+    restart: always
+    ports:
+      - 6379:6379
+    volumes: 
+      - ./redis/data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server --appendonly yes  --requirepass idorp123456
+
+
+  # 配置openresty   extra_hosts=给容器添加hosts
+  # extra_hosts:
+  #   - dev.idorp.com:127.0.0.1
+  openresty:
+    image: openresty/openresty:focal
+    container_name: "openresty_focal"
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./openresty/conf:/etc/nginx/conf.d
+      - ./openresty/data:/data
+      - ./openresty/logs:/usr/local/openresty/nginx/logs
+
+  # 配置tomcat
+  tomcat:
+    image: tomcat:8.5
+    container_name: "tomcat8_5"
+    restart: always
+    ports:
+      - 9999:8080
+    volumes: 
+      - ./tomcat/webapps:/usr/local/tomcat/webapps
+
+  jenkins:
+    image: jenkins/jenkins
+    restart: always
+    container_name: "jenkins"
+    ports:
+      - 8881:8080
+      - 50000:50000
+    volumes: 
+      - ./jenkins/home:/var/jenkins_home
+    networks:
+      - "net_jenkins"
+
+  redmine:
+    image: redmine:alpine
+    restart: always
+    container_name: "redmine"
+    ports:
+      - 8882:3000
+    volumes: 
+      - ./redmine/home:/usr/src/redmine/files
+    networks:
+      - "net_redmine"
+
+networks: 
+  net_jenkins: 
+    driver: bridge
+  net_redmine: 
+    driver: bridge
+
+        
+        
