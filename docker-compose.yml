@@ -54,6 +54,17 @@ services:
     volumes: 
       - ./tomcat/webapps:/usr/local/tomcat/webapps
 
+  # 配置EMQ
+  emq:
+    image: emqx/emqx:4.2.1
+    container_name: "emq_4_2_1"
+    restart: always
+    ports:
+      - 1883:1883
+      - 18083:18083
+    volumes: 
+      - ./emq/log:/opt/emqx/log
+
   jenkins:
     image: jenkins/jenkins
     restart: always

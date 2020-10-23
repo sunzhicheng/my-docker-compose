@@ -25,6 +25,9 @@ rm)
     echo "删除服务"
     docker-compose  rm redmine
     ;;
+--help)
+    echo "支持的格式  init|start|stop|rm"
+    ;;  
 *)
 
     echo "不支持的指令参数"

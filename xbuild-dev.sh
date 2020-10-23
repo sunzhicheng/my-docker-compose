@@ -37,7 +37,10 @@ rm)
 restart)
     echo "重启<${service}>服务"
     docker-compose  restart $service
-    ;;    
+    ;;  
+--help)
+    echo "支持的格式  init|start|stop|rm|restart  null|db|redis|openresty"
+    ;;      
 *)
     echo "不支持的指令参数"
     ;;
