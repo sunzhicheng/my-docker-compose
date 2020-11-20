@@ -25,3 +25,4 @@ mysql
 redis
 tomcat
 emq
+services.img
