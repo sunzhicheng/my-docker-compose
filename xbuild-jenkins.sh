@@ -17,6 +17,10 @@ start)
     echo "开启服务"
     docker-compose  start jenkins
     ;;
+restart)
+    echo "重启服务"
+    docker-compose  restart jenkins
+    ;;
 stop)
     echo "停止服务"
     docker-compose  stop jenkins
@@ -26,7 +30,7 @@ rm)
     docker-compose  rm jenkins
     ;;
 --help)
-    echo "支持的格式  init|start|stop|rm"
+    echo "支持的格式  init|start|restart|stop|rm"
     ;;  
 *)
 
