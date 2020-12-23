@@ -18,14 +18,17 @@ services:
       --collation-server=utf8mb4_unicode_ci
     networks:
       - tt-net
+  # 配置phpmyadmin 
   phpmyadmin:
-    image: phpmyadmin:phpmyadmin
-    restart: always
+    image: library/phpmyadmin
+    #restart: always
     container_name: "phpmyadmin"
     ports:
       - 9999:80
     links:
       - mysql:db
+    networks:
+      - tt-net
 
   # 配置redis
   redis:
@@ -58,12 +61,14 @@ services:
       - ./openresty/logs:/usr/local/openresty/nginx/logs
     networks:
       - tt-net
+    links:
+      - tomcat:tomcat
 
   # 配置EMQ
   emq:
     image: emqx/emqx:4.2.1
     container_name: "emq_4_2_1"
-    restart: always
+    #restart: always
     ports:
       - 1883:1883
       - 18083:18083
@@ -71,7 +76,7 @@ services:
       - ./emq/log:/opt/emqx/log
     networks:
       - tt-net
-
+    
 networks: 
   tt-net: 
     driver: bridge
