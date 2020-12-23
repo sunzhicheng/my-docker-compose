@@ -39,7 +39,7 @@ restart)
     docker-compose  restart $service
     ;;  
 --help)
-    echo "支持的格式  init|start|stop|rm|restart  null|db|redis|openresty"
+    echo "支持的格式  init|start|stop|rm|restart  null|db|redis|openresty|emq"
     ;;      
 *)
     echo "不支持的指令参数"

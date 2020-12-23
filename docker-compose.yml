@@ -16,6 +16,8 @@ services:
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
+    networks:
+      - tt-net
   # 配置redis
   redis:
     image: redis:3
@@ -27,6 +29,8 @@ services:
       - ./redis/data:/data
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server --appendonly yes  --requirepass idorp123456
+    networks:
+      - tt-net
 
 
   # 配置openresty   extra_hosts=给容器添加hosts
@@ -43,16 +47,8 @@ services:
       - ./openresty/conf:/etc/nginx/conf.d
       - ./openresty/data:/data
       - ./openresty/logs:/usr/local/openresty/nginx/logs
-
-  # 配置tomcat
-  tomcat:
-    image: tomcat:8.5
-    container_name: "tomcat8_5"
-    restart: always
-    ports:
-      - 9999:8080
-    volumes: 
-      - ./tomcat/webapps:/usr/local/tomcat/webapps
+    networks:
+      - tt-net
 
   # 配置EMQ
   emq:
@@ -64,34 +60,11 @@ services:
       - 18083:18083
     volumes: 
       - ./emq/log:/opt/emqx/log
-
-  jenkins:
-    image: jenkins/jenkins
-    restart: always
-    container_name: "jenkins"
-    ports:
-      - 8881:8080
-      - 50000:50000
-    volumes: 
-      - ./jenkins/home:/var/jenkins_home
     networks:
-      - "net_jenkins"
-
-  redmine:
-    image: redmine:alpine
-    restart: always
-    container_name: "redmine"
-    ports:
-      - 8882:3000
-    volumes: 
-      - ./redmine/home:/usr/src/redmine/files
-    networks:
-      - "net_redmine"
+      - tt-net
 
 networks: 
-  net_jenkins: 
-    driver: bridge
-  net_redmine: 
+  tt-net: 
     driver: bridge
 
         
