@@ -61,8 +61,6 @@ services:
       - ./openresty/logs:/usr/local/openresty/nginx/logs
     networks:
       - tt-net
-    links:
-      - tomcat:tomcat
 
   # 配置EMQ
   emq:
