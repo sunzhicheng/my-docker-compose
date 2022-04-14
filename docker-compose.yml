@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  # 配置数据库
+  # 配置数据库   skip-name-resolve  解决通过dns连接数据库慢的问题
   mysql:
     image: mysql:5.7
     restart: always
@@ -16,8 +16,11 @@ services:
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
+      --lower-case-table-names=1
+      --skip-name-resolve  
     networks:
       - tt-net
+
   # 配置phpmyadmin 
   phpmyadmin:
     image: library/phpmyadmin
@@ -29,6 +32,9 @@ services:
       - mysql:db
     networks:
       - tt-net
+    environment:
+      # 开启连接外部数据的IP选择框
+      - PMA_ARBITRARY=1
 
   # 配置redis
   redis:
@@ -69,11 +75,26 @@ services:
     #restart: always
     ports:
       - 1883:1883
+      - 8083:8083
       - 18083:18083
     volumes: 
       - ./emq/log:/opt/emqx/log
     networks:
       - tt-net
+
+      # 配置portainer
+  dockerManager:
+    image: portainer/portainer-ce:latest
+    restart: always
+    container_name: "dockerManager"
+    ports:
+      - 9000:9000
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+    networks:
+      - tt-net
+
     
 networks: 
   tt-net: 

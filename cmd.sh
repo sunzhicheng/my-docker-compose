@@ -7,7 +7,17 @@ else
     echo "缺少参数支持服务有:mysql  redis openresty jenkins"
     exit 1;
 fi
-docker-compose exec $CMD bash
+
+case $CMD in
+emq)
+    docker-compose exec $CMD sh
+    ;;    
+*)
+    docker-compose exec $CMD bash
+    ;;
+esac
+
+
 
 
 

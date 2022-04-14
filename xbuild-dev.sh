@@ -10,8 +10,8 @@ fi
 if [ -n "$2" ]; then
     service=$2
 else
-    echo "默认 db redis openresty"
-    service="db redis openresty"
+    echo "默认 mysql redis openresty"
+    service="mysql redis openresty"
 fi
 
 echo "运行指令: ${CMD}"
