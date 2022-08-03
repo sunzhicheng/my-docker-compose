@@ -171,21 +171,13 @@ services:
 
   gogs:
     #restart: always # 自动重启
-    image: gogs/gogs
+    image: gogs/gogs:0.12
     container_name: gogs
     ports:
       - "6022:22" # ssh 端口
       - "6030:3000" # Web 访问端口
     volumes:
-      - ../gogs/data:/data/git/gogs-repositories # 数据存储
-    networks:
-      - tt-net  
-
-  dgiot:
-    image: dgiot/dgiot:4.4.5
-    container_name: iot
-    ports:
-      - "6040:5080" # ssh 端口
+      - ../gogs/data:/home/git/gogs-repositories # 数据存储
     networks:
       - tt-net  
  
