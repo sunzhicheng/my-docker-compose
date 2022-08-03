@@ -86,7 +86,7 @@ services:
       # 配置portainer 容器管理器
   dockerManager:
     image: portainer/portainer-ce:latest
-    restart: always
+    #restart: always
     container_name: "dockerManager"
     ports:
       - 9000:9000
@@ -142,26 +142,35 @@ services:
       
   #redmine 配置    
   redmine:
-    image: redmine
-    restart: always
+    image: redmine:4.2.7-bullseye
+    container_name: redmine
+    # restart: always
     ports:
       - 3000:3000
     environment:
-      - VIRTUAL_HOST=redmine.sunzc.com
+      - VIRTUAL_HOST=127.0.0.1
       - VIRTUAL_NETWORK=nginx-proxy
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=redmine.sunzc.com
+      - LETSENCRYPT_HOST=127.0.0.1
       - LETSENCRYPT_EMAIL=365328730@qq.com
       - REDMINE_DB_MYSQL=mysql
+      - REDMINE_DB_USERNAME=root
       - REDMINE_DB_PASSWORD=idorp123456
+      - REDMINE_DB_PORT=3306
+      - REDMINE_DB_NAME=redmine
+      - REDMINE_SECRET_KEY_BASE=sunzhicheng@P0SSW0RD
+      
     volumes:
-      - /data/server/docker/redmine/config/configuration.yml:/usr/src/redmine/config/configuration.yml
-      - /data/server/docker/redmine/files:/usr/src/redmine/files
+      - ../redmine/config/configuration.yml:/usr/src/redmine/config/configuration.yml
+      - ../redmine/files:/usr/src/redmine/files
+      - ../gogs/data:/usr/src/redmine/gogs-repositories
+    depends_on:
+      - mysql
     networks:
       - tt-net
 
   gogs:
-    restart: always # 自动重启
+    #restart: always # 自动重启
     image: gogs/gogs
     container_name: gogs
     ports:
@@ -172,6 +181,32 @@ services:
     networks:
       - tt-net  
 
+  dgiot:
+    image: dgiot/dgiot:4.4.5
+    container_name: iot
+    ports:
+      - "6040:5080" # ssh 端口
+    networks:
+      - tt-net  
+ 
+  tb:
+    # restart: always
+    image: "thingsboard/tb-postgres"
+    container_name: tb_iot
+    ports:
+      - "6090:9090"
+      - "1883:1883"
+      - "5683:5683/udp"
+    environment:
+      TB_QUEUE_TYPE: in-memory
+    volumes:
+      - ../thingsboard/data:/data
+      - ../thingsboard/logs:/var/log/thingsboard
+# volumes:
+#   mytb-data:    #可在所有服务中调用
+#     external: true   #如果设置为 true 则 docker-compose up 不会尝试创建它, 如果它不存在则引发错误
+#   mytb-logs:
+#     external: true
 networks: 
   tt-net: 
     driver: bridge
