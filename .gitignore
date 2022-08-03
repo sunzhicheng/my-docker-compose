@@ -28,3 +28,4 @@ emq
 services.img
 gogs
 thingsboard
+dockerManager
