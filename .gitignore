@@ -29,3 +29,5 @@ services.img
 gogs
 thingsboard
 dockerManager
+postgres
+portainer_data

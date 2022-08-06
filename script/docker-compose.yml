@@ -22,6 +22,18 @@ services:
     networks:
       - tt-net
 
+  postgres:
+    image: postgres
+    # restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres   #默认账户名为  postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ../postgres/data:/var/lib/postgresql/data
+    networks:
+      - tt-net
+
   # 配置phpmyadmin 
   phpmyadmin:
     image: library/phpmyadmin
@@ -75,9 +87,9 @@ services:
     container_name: "emq_4_2_1"
     #restart: always
     ports:
-      - 1883:1883
-      - 8083:8083
-      - 18083:18083
+      - 4883:1883
+      - 4083:8083
+      - 48083:18083
     volumes: 
       - ../emq/log:/opt/emqx/log
     networks:
@@ -123,22 +135,6 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     networks:
       - tt-net
-
-  #jenkins 配置
-  jenkins:
-    image: 'jenkins/jenkins'
-    container_name: jenkins
-    restart: always
-    environment:
-      - TZ=Asia/Shanghai
-    ports:
-      - '9998:8080'
-      - '50000:50000'
-    volumes:
-      - '/etc/localtime:/etc/localtime'
-      - '/home/data/jenkins:/var/jenkins_home'
-    networks:
-      - tt-net
       
   #redmine 配置    
   redmine:
@@ -148,6 +144,7 @@ services:
     ports:
       - 3000:3000
     environment:
+      - TZ=Asia/Shanghai
       - VIRTUAL_HOST=127.0.0.1
       - VIRTUAL_NETWORK=nginx-proxy
       - VIRTUAL_PORT=3000
@@ -159,11 +156,9 @@ services:
       - REDMINE_DB_PORT=3306
       - REDMINE_DB_NAME=redmine
       - REDMINE_SECRET_KEY_BASE=sunzhicheng@P0SSW0RD
-      
     volumes:
-      - ../redmine/config/configuration.yml:/usr/src/redmine/config/configuration.yml
       - ../redmine/files:/usr/src/redmine/files
-      - ../gogs/data:/usr/src/redmine/gogs-repositories
+      - ../redmine/git-repo:/usr/src/redmine/git-repo
     depends_on:
       - mysql
     networks:
@@ -171,11 +166,13 @@ services:
 
   gogs:
     #restart: always # 自动重启
-    image: gogs/gogs:0.12
+    image: gogs/gogs:latest
     container_name: gogs
     ports:
       - "6022:22" # ssh 端口
       - "6030:3000" # Web 访问端口
+    environment:
+      - TZ=Asia/Shanghai
     volumes:
       - ../gogs/data:/home/git/gogs-repositories # 数据存储
     networks:
@@ -190,7 +187,8 @@ services:
       - "1883:1883"
       - "5683:5683/udp"
     environment:
-      TB_QUEUE_TYPE: in-memory
+      - TB_QUEUE_TYPE=in-memory
+      - TZ=Asia/Shanghai
     volumes:
       - ../thingsboard/data:/data
       - ../thingsboard/logs:/var/log/thingsboard
