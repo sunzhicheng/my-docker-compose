@@ -21,10 +21,12 @@ case $CMD in
 init)
     echo "开启<${service}>服务"
     docker-compose  up -d $service
+    docker-compose  logs -f $service 
     ;;
 start)
     echo "开启<${service}>服务"
     docker-compose  start $service
+    docker-compose  logs -f $service 
     ;;
 stop)
     echo "停止<${service}>服务"
