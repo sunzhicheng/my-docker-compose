@@ -13,6 +13,7 @@ import)
     ;;
 export)
     if [ -n "$2" ]; then
+        cid=docker ps | grep "${2}" | awk '{print $1}'
         name="./containe/${2}-szc.tar"
         docker export -o $name $2
      else

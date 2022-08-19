@@ -60,6 +60,8 @@ services:
       - ../redis/data:/data
       - ../redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server --appendonly yes  --requirepass idorp123456
+    environment:
+      - TZ=Asia/Shanghai
     networks:
       - tt-net
 
@@ -76,7 +78,6 @@ services:
     volumes:
       - ../openresty/conf:/etc/nginx/conf.d
       - ../openresty/data:/data
-      - ../openresty:/usr/local/openresty/nginx/conf/nginx.conf
       - ../openresty/logs:/usr/local/openresty/nginx/logs
     networks:
       - tt-net
@@ -159,6 +160,7 @@ services:
     volumes:
       - ../redmine/files:/usr/src/redmine/files
       - ../redmine/git-repo:/usr/src/redmine/git-repo
+      - ../redmine/configuration.yml:/usr/src/redmine/config/configuration.yml
     depends_on:
       - mysql
     networks:
@@ -192,6 +194,22 @@ services:
     volumes:
       - ../thingsboard/data:/data
       - ../thingsboard/logs:/var/log/thingsboard
+
+
+  elasticsearch:
+    image: elasticsearch:6.8.11
+    container_name: elasticsearch
+    environment:
+      ES_JAVA_OPTS: -Djava.net.preferIPv4Stack=true -Xms1g -Xmx1g
+      transport.host: 0.0.0.0
+      discovery.type: single-node
+      bootstrap.memory_lock: "true"
+      discovery.zen.minimum_master_nodes: 1
+      discovery.zen.ping.unicast.hosts: elasticsearch
+    volumes:
+      - ../elasticsearch/data:/usr/share/elasticsearch/data
+
+
 # volumes:
 #   mytb-data:    #可在所有服务中调用
 #     external: true   #如果设置为 true 则 docker-compose up 不会尝试创建它, 如果它不存在则引发错误
