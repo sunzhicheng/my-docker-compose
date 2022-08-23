@@ -144,6 +144,7 @@ services:
     restart: always
     environment:
       - TZ=Asia/Shanghai
+      -u root
     ports:
       - '9998:8080'
       - '50000:50000'
