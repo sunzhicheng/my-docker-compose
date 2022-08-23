@@ -24,7 +24,7 @@ services:
 
   postgres:
     image: postgres
-    # restart: always
+    restart: always
     environment:
       POSTGRES_PASSWORD: postgres   #默认账户名为  postgres
     ports:
@@ -142,7 +142,6 @@ services:
     image: 'jenkinsci/blueocean'
     container_name: jenkins
     restart: always
-    user: root
     environment:
       - TZ=Asia/Shanghai
     ports:
@@ -158,7 +157,7 @@ services:
   redmine:
     image: redmine:4.2.7-bullseye
     container_name: redmine
-    # restart: always
+    restart: always
     ports:
       - 3000:3000
     hostname: redmine

@@ -14,5 +14,6 @@ echo "同步的host:${host}  用户名:${user}   端口:${port}"
 
 local_str=./$data/*
 data_str=$user@$host:/home/$user/docker/$data
-
+echo "from dir:$local_str"
+echo "to dir:$data_str"
 rsync -ravz --progress "-e ssh -p ${port}"  $local_str  $data_str

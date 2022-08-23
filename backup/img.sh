@@ -3,10 +3,10 @@ dir=$(cd $(dirname $0) && pwd )
 case $1 in
 load)
     if [ -n "$2" ]; then
-        name="${2}.img"
-        docker load -i $dir/img/$name
+        name="${2}"
+        docker load -i $dir/$name
     else 
-        docker load -i $dir/img/services.img
+        docker load -i $dir/services.img
     fi
     ;;
 save)
@@ -28,6 +28,9 @@ save)
 --help)
     echo "支持的格式  save|load  [镜像名称]"
     ;;      
+-a)
+    docker images -a
+    ;;   
 *)
     echo "不支持的指令参数"
     ;;

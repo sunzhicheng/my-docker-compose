@@ -7,3 +7,4 @@ cd  scrip 目录
 
 openrety的  nginx.conf 方在  openresty/conf 的目录下
 
+backup目录：是用于导出导入镜像使用的工具脚本
