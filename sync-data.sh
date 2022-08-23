@@ -4,9 +4,15 @@ host=$1
 user=${2-"root"}   
 #第三个参数为空的话  就用22作为默认值
 port=${3-"22"}
+data=$4
+if [ ! -n "$4" ]; then
+    echo "同步的数据目录不能为空"
+    exit 1;
+fi
 
 echo "同步的host:${host}  用户名:${user}   端口:${port}"
 
-ssh_str=$user@$host:/home/$user/docker/script
+local_str=./$data/*
+data_str=$user@$host:/home/$user/docker/$data
 
-rsync -ravz --progress "-e ssh -p ${port}" ./script/*  $ssh_str
+rsync -ravz --progress "-e ssh -p ${port}"  $local_str  $data_str
