@@ -1,6 +1,55 @@
 version: '3'
 
 services:
+  #################################################项目管理开始##############################################
+  ####  jenkins:9991    redmine:9992
+  #jenkins 配置
+  jenkins:
+    image: 'jenkinsci/blueocean'
+    container_name: jenkins
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - '9991:8080'
+      - '50000:50000'
+    volumes:
+      - '../jenkins/data:/var/jenkins_home'
+      - '../jenkins/docker.sock:/var/run/docker.sock'
+    networks:
+      - manager-net
+      
+  #redmine 配置    
+  redmine:
+    image: redmine:4.2.7-bullseye
+    container_name: redmine
+    restart: always
+    ports:
+      - 9992:3000
+    hostname: redmine
+    environment:
+      - TZ=Asia/Shanghai
+      - VIRTUAL_HOST=127.0.0.1
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=127.0.0.1
+      - LETSENCRYPT_EMAIL=365328730@qq.com
+      - REDMINE_DB_MYSQL=mysql
+      - REDMINE_DB_USERNAME=root
+      - REDMINE_DB_PASSWORD=idorp123456
+      - REDMINE_DB_PORT=3306
+      - REDMINE_DB_NAME=redmine
+      - REDMINE_SECRET_KEY_BASE=sunzhicheng@P0SSW0RD
+    volumes:
+      - ../redmine/files:/usr/src/redmine/files
+      - ../redmine/git-repo:/usr/src/redmine/git-repo
+      - ../redmine/configuration.yml:/usr/src/redmine/config/configuration.yml
+    depends_on:
+      - mysql
+    networks:
+      - tt-net
+
+  #################################################项目管理结束##############################################
   # 配置数据库   skip-name-resolve  解决通过dns连接数据库慢的问题
   mysql:
     image: mysql:5.7
@@ -40,7 +89,7 @@ services:
     #restart: always
     container_name: "phpmyadmin"
     ports:
-      - 9999:80
+      - 8801:80
     links:
       - mysql:db
     networks:
@@ -88,9 +137,9 @@ services:
     container_name: "emq_4_2_1"
     #restart: always
     ports:
-      - 4883:1883
-      - 4083:8083
-      - 48083:18083
+      - 8883:1883
+      - 8883:8083
+      - 18083:18083
     volumes: 
       - ../emq/log:/opt/emqx/log
     networks:
@@ -102,7 +151,7 @@ services:
     #restart: always
     container_name: "dockerManager"
     ports:
-      - 9000:9000
+      - 8802:9000
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
       - ../dockerManager/data:/data
@@ -137,66 +186,47 @@ services:
     networks:
       - tt-net
 
-  #jenkins 配置
-  jenkins:
-    image: 'jenkinsci/blueocean'
-    container_name: jenkins
-    restart: always
-    environment:
-      - TZ=Asia/Shanghai
-    ports:
-      - '9998:8080'
-      - '50000:50000'
-    volumes:
-      - '../jenkins/data:/var/jenkins_home'
-      - '../jenkins/docker.sock:/var/run/docker.sock'
-    networks:
-      - tt-net
-      
-  #redmine 配置    
-  redmine:
-    image: redmine:4.2.7-bullseye
-    container_name: redmine
-    restart: always
-    ports:
-      - 3000:3000
-    hostname: redmine
-    environment:
-      - TZ=Asia/Shanghai
-      - VIRTUAL_HOST=127.0.0.1
-      - VIRTUAL_NETWORK=nginx-proxy
-      - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=127.0.0.1
-      - LETSENCRYPT_EMAIL=365328730@qq.com
-      - REDMINE_DB_MYSQL=mysql
-      - REDMINE_DB_USERNAME=root
-      - REDMINE_DB_PASSWORD=idorp123456
-      - REDMINE_DB_PORT=3306
-      - REDMINE_DB_NAME=redmine
-      - REDMINE_SECRET_KEY_BASE=sunzhicheng@P0SSW0RD
-    volumes:
-      - ../redmine/files:/usr/src/redmine/files
-      - ../redmine/git-repo:/usr/src/redmine/git-repo
-      - ../redmine/configuration.yml:/usr/src/redmine/config/configuration.yml
-    depends_on:
-      - mysql
-    networks:
-      - tt-net
+  
 
   gogs:
     #restart: always # 自动重启
     image: gogs/gogs:latest
     container_name: gogs
     ports:
-      - "6022:22" # ssh 端口
-      - "6030:3000" # Web 访问端口
+      - "8822:22" # ssh 端口
+      - "8830:3000" # Web 访问端口
     environment:
       - TZ=Asia/Shanghai
     volumes:
       - ../gogs/data:/home/git/gogs-repositories # 数据存储
     networks:
       - tt-net  
- 
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    restart: unless-stopped
+    networks:
+      - mqtt-net 
+
+  kafka1:
+    image: wurstmeister/kafka
+    ports:
+      - 9092:9092
+      - 8083:8083
+    environment:
+      DOCKER_API_VERSION: 1.22
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.0.22
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    # volumes:
+      # - ../kafka/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    networks:
+      - mqtt-net 
+
   tb:
     # restart: always
     image: "thingsboard/tb-postgres"
@@ -225,7 +255,8 @@ services:
       discovery.zen.ping.unicast.hosts: elasticsearch
     volumes:
       - ../elasticsearch/data:/usr/share/elasticsearch/data
-
+    networks:
+      - tt-net   
 
 # volumes:
 #   mytb-data:    #可在所有服务中调用
@@ -234,6 +265,10 @@ services:
 #     external: true
 networks: 
   tt-net: 
+    driver: bridge
+  mqtt-net: 
+    driver: bridge
+  manager-net: 
     driver: bridge
 
         
