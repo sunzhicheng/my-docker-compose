@@ -44,6 +44,7 @@ services:
       - ../redmine/files:/usr/src/redmine/files
       - ../redmine/git-repo:/usr/src/redmine/git-repo
       - ../redmine/configuration.yml:/usr/src/redmine/config/configuration.yml
+      - ../redmine/plugin:/usr/src/redmine/plugins
     depends_on:
       - mysql
     networks:
