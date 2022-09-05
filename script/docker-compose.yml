@@ -34,7 +34,7 @@ services:
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=127.0.0.1
       - LETSENCRYPT_EMAIL=365328730@qq.com
-      - REDMINE_DB_MYSQL=mysql
+      - REDMINE_DB_MYSQL=mysql  # mysql中的amdin默认密码是sun123456
       - REDMINE_DB_USERNAME=root
       - REDMINE_DB_PASSWORD=idorp123456
       - REDMINE_DB_PORT=3306
@@ -42,7 +42,7 @@ services:
       - REDMINE_SECRET_KEY_BASE=sunzhicheng@P0SSW0RD
     volumes:
       - ../redmine/files:/usr/src/redmine/files
-      - ../redmine/git-repo:/usr/src/redmine/git-repo
+      - ../redmine/git-repo:/home/redmine/git-repo
       - ../redmine/configuration.yml:/usr/src/redmine/config/configuration.yml
     depends_on:
       - mysql
