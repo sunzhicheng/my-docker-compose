@@ -70,7 +70,7 @@ services:
     volumes:
       - ../nexus/data:/nexus-data
     networks:
-      - tt-net
+      - manager-net
 
   #################################################项目管理结束##############################################
   # 配置数据库   skip-name-resolve  解决通过dns连接数据库慢的问题
