@@ -54,7 +54,7 @@ services:
     ports:
       - "8880:8880"
     volumes:
-      - ../mvn-repo:${user.home}/.maven
+      - ../mvn-repo:/var/app/.maven
     networks:
       - manager-net
     
