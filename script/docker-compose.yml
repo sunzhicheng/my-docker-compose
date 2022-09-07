@@ -48,16 +48,7 @@ services:
       - mysql
     networks:
       - tt-net
-
-  mvn-repo:
-    image: java-repo:1.0
-    ports:
-      - "9993:8880"
-    volumes:
-      - ../mvn-repo:/var/app/.maven
-    networks:
-      - manager-net
-    
+      
   #nexus   
   nexus:
     restart: always
