@@ -49,6 +49,29 @@ services:
     networks:
       - tt-net
 
+  mvn-repo:
+    image: java-repo:1.0
+    ports:
+      - "8880:8880"
+    volumes:
+      - ../mvn-repo:${user.home}/.maven
+    networks:
+      - manager-net
+    
+  #nexus   
+  nexus:
+    restart: always
+    image: sonatype/nexus3:3.41.1
+    container_name: nexus
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - "8081:8081"
+    volumes:
+      - ../nexus/data:/nexus-data
+    networks:
+      - tt-net
+
   #################################################项目管理结束##############################################
   # 配置数据库   skip-name-resolve  解决通过dns连接数据库慢的问题
   mysql:
@@ -128,20 +151,6 @@ services:
       - ../openresty/conf:/etc/nginx/conf.d
       - ../openresty/data:/data
       - ../openresty/logs:/usr/local/openresty/nginx/logs
-    networks:
-      - tt-net
-
-  #nexus   
-  nexus:
-    restart: always
-    image: sonatype/nexus3:3.41.1
-    container_name: nexus
-    environment:
-      - TZ=Asia/Shanghai
-    ports:
-      - "8081:8081"
-    volumes:
-      - ../nexus/data:/nexus-data
     networks:
       - tt-net
 
