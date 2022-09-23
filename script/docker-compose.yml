@@ -89,7 +89,6 @@ services:
     image: postgres
     restart: always
     environment:
-      - TZ=Asia/Shanghai
       POSTGRES_PASSWORD: postgres #默认账户名为  postgres
     ports:
       - 5432:5432
