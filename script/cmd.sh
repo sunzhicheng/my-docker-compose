@@ -9,9 +9,6 @@ else
 fi
 
 case $CMD in
-emq)
-    docker-compose exec $CMD sh
-    ;;    
 *)
     docker-compose exec $CMD bash
     ;;

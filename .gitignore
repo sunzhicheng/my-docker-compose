@@ -32,4 +32,4 @@ dockerManager
 postgres
 portainer_data
 backup/img/
-
+nexus/

@@ -18,8 +18,8 @@ services:
       - '../jenkins/docker.sock:/var/run/docker.sock'
     networks:
       - manager-net
-      
-  #redmine 配置    
+
+  #redmine 配置
   redmine:
     image: redmine:4.2.7-bullseye
     container_name: redmine
@@ -34,7 +34,7 @@ services:
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=127.0.0.1
       - LETSENCRYPT_EMAIL=365328730@qq.com
-      - REDMINE_DB_MYSQL=mysql  # mysql中的amdin默认密码是sun123456
+      - REDMINE_DB_MYSQL=mysql # mysql中的amdin默认密码是sun123456
       - REDMINE_DB_USERNAME=root
       - REDMINE_DB_PASSWORD=idorp123456
       - REDMINE_DB_PORT=3306
@@ -48,8 +48,8 @@ services:
       - mysql
     networks:
       - tt-net
-      
-  #nexus   
+
+  #nexus
   nexus:
     restart: always
     image: sonatype/nexus3:3.41.1
@@ -57,7 +57,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
     ports:
-      - "9994:8081"
+      - '9994:8081'
     volumes:
       - ../nexus/data:/nexus-data
     networks:
@@ -68,12 +68,12 @@ services:
   mysql:
     image: mysql:5.7
     restart: always
-    container_name: "mysql_5_7"
+    container_name: 'mysql_5_7'
     environment:
       - MYSQL_ROOT_PASSWORD=idorp123456
     ports:
       - 3306:3306
-    volumes: 
+    volumes:
       - ../mysql/data:/var/lib/mysql
       - ../mysql/conf/conf.d:/etc/mysql/conf.d
     command: >
@@ -81,7 +81,7 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
       --lower-case-table-names=1
-      --skip-name-resolve  
+      --skip-name-resolve
     networks:
       - tt-net
 
@@ -89,7 +89,8 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: postgres   #默认账户名为  postgres
+      POSTGRES_PASSWORD: postgres #默认账户名为  postgres
+      - TZ=Asia/Shanghai
     ports:
       - 5432:5432
     volumes:
@@ -97,11 +98,25 @@ services:
     networks:
       - tt-net
 
-  # 配置phpmyadmin 
+  oracle:
+    image: oraclelinux:7.9
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - 1521:1521
+    volumes:
+      - ../oracle/data:/u01/app/oracle/
+    networks:
+      - tt-net
+
+  # 配置phpmyadmin
   phpmyadmin:
     image: library/phpmyadmin
     #restart: always
-    container_name: "phpmyadmin"
+    container_name: 'phpmyadmin'
+    environment:
+      - TZ=Asia/Shanghai
     ports:
       - 8801:80
     links:
@@ -115,11 +130,11 @@ services:
   # 配置redis
   redis:
     image: redis:7
-    container_name: "redis7"
+    container_name: 'redis7'
     restart: always
     ports:
       - 6379:6379
-    volumes: 
+    volumes:
       - ../redis/data:/data
       - ../redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server --appendonly yes  --requirepass idorp123456
@@ -133,7 +148,7 @@ services:
   #   - dev.idorp.com:127.0.0.1
   openresty:
     image: openresty/openresty:focal
-    container_name: "openresty_focal"
+    container_name: 'openresty_focal'
     restart: always
     ports:
       - 80:80
@@ -145,16 +160,16 @@ services:
     networks:
       - tt-net
 
-  # 配置EMQ
+  # 配置EMQ  /opt/emqx/etc/emqx.conf
   emq:
-    image: emqx/emqx:4.2.1
-    container_name: "emq_4_2_1"
+    image: emqx/emqx:5.0.8
+    container_name: 'emq_5_0_8'
     #restart: always
     ports:
-      - 8883:1883
-      - 8883:8083
+      - 1893:1883
+      - 8093:8083
       - 18083:18083
-    volumes: 
+    volumes:
       - ../emq/log:/opt/emqx/log
     networks:
       - tt-net
@@ -163,10 +178,10 @@ services:
   dockerManager:
     image: portainer/portainer-ce:latest
     #restart: always
-    container_name: "dockerManager"
+    container_name: 'dockerManager'
     ports:
       - 8802:9000
-    volumes: 
+    volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../dockerManager/data:/data
     networks:
@@ -176,9 +191,9 @@ services:
   jobmanager:
     image: flink:latest
     expose:
-      - "6123"
+      - '6123'
     ports:
-      - "8081:8081"
+      - '8081:8081'
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
@@ -188,41 +203,39 @@ services:
   taskmanager:
     image: flink:latest
     expose:
-      - "6121"
-      - "6122"
+      - '6121'
+      - '6122'
     depends_on:
       - jobmanager
     command: taskmanager
     links:
-      - "jobmanager:jobmanager"
+      - 'jobmanager:jobmanager'
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     networks:
       - tt-net
-
-  
 
   gogs:
     #restart: always # 自动重启
     image: gogs/gogs:latest
     container_name: gogs
     ports:
-      - "8822:22" # ssh 端口
-      - "8830:3000" # Web 访问端口
+      - '8822:22' # ssh 端口
+      - '8830:3000' # Web 访问端口
     environment:
       - TZ=Asia/Shanghai
     volumes:
       - ../gogs/data:/home/git/gogs-repositories # 数据存储
     networks:
-      - tt-net  
+      - tt-net
 
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
-      - "2181:2181"
+      - '2181:2181'
     restart: unless-stopped
     networks:
-      - mqtt-net 
+      - mqtt-net
 
   kafka1:
     image: wurstmeister/kafka
@@ -234,28 +247,27 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.0.22
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     # volumes:
-      # - ../kafka/docker.sock:/var/run/docker.sock
+    # - ../kafka/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     depends_on:
       - zookeeper
     networks:
-      - mqtt-net 
+      - mqtt-net
 
   tb:
     # restart: always
-    image: "thingsboard/tb-postgres"
+    image: 'thingsboard/tb-postgres'
     container_name: tb_iot
     ports:
-      - "6090:9090"
-      - "1883:1883"
-      - "5683:5683/udp"
+      - '6090:9090'
+      - '1883:1883'
+      - '5683:5683/udp'
     environment:
       - TB_QUEUE_TYPE=in-memory
       - TZ=Asia/Shanghai
     volumes:
       - ../thingsboard/data:/data
       - ../thingsboard/logs:/var/log/thingsboard
-
 
   elasticsearch:
     image: elasticsearch:6.8.11
@@ -264,26 +276,23 @@ services:
       ES_JAVA_OPTS: -Djava.net.preferIPv4Stack=true -Xms1g -Xmx1g
       transport.host: 0.0.0.0
       discovery.type: single-node
-      bootstrap.memory_lock: "true"
+      bootstrap.memory_lock: 'true'
       discovery.zen.minimum_master_nodes: 1
       discovery.zen.ping.unicast.hosts: elasticsearch
     volumes:
       - ../elasticsearch/data:/usr/share/elasticsearch/data
     networks:
-      - tt-net   
+      - tt-net
 
 # volumes:
 #   mytb-data:    #可在所有服务中调用
 #     external: true   #如果设置为 true 则 docker-compose up 不会尝试创建它, 如果它不存在则引发错误
 #   mytb-logs:
 #     external: true
-networks: 
-  tt-net: 
+networks:
+  tt-net:
     driver: bridge
-  mqtt-net: 
+  mqtt-net:
     driver: bridge
-  manager-net: 
+  manager-net:
     driver: bridge
-
-        
-        
