@@ -98,14 +98,12 @@ services:
       - tt-net
 
   oracle:
-    image: oraclelinux:7.9
+    image: bitnami/oraclelinux-extras:7
     privileged: true
     environment:
       - TZ=Asia/Shanghai
     ports:
       - 1521:1521
-    volumes:
-      - ../oracle/data:/u01/app/oracle/
     networks:
       - tt-net
 
