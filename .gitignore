@@ -33,3 +33,5 @@ postgres
 portainer_data
 backup/img/
 nexus/
+rabbitmq
+minio
