@@ -41,9 +41,9 @@ services:
       - REDMINE_DB_NAME=redmine
       - REDMINE_SECRET_KEY_BASE=sunzhicheng@P0SSW0RD
     volumes:
-      - ../redmine/files:/usr/src/redmine/files
-      - ../redmine/git-repo:/home/redmine/git-repo
-      - ../redmine/configuration.yml:/usr/src/redmine/config/configuration.yml
+      - ../docker-data/redmine/files:/usr/src/redmine/files
+      - ../docker-data/redmine/git-repo:/home/redmine/git-repo
+      - ../docker-data/redmine/configuration.yml:/usr/src/redmine/config/configuration.yml
     depends_on:
       - mysql
     networks:
@@ -59,7 +59,7 @@ services:
     ports:
       - '9994:8081'
     volumes:
-      - ../nexus/data:/nexus-data
+      - ../docker-data/nexus/data:/nexus-data
     networks:
       - manager-net
 
@@ -74,8 +74,8 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ../mysql/data:/var/lib/mysql
-      - ../mysql/conf/conf.d:/etc/mysql/conf.d
+      - ../docker-data/mysql/data:/var/lib/mysql
+      - ../docker-data/mysql/conf/conf.d:/etc/mysql/conf.d
     command: >
       --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
@@ -93,7 +93,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ../postgres/data:/var/lib/postgresql/data
+      - ../docker-data/postgres/data:/var/lib/postgresql/data
     networks:
       - tt-net
 
@@ -110,7 +110,8 @@ services:
   minio:
     image: minio/minio:latest                                    # 原镜像`minio/minio:latest`
     container_name: minio                                        # 容器名为'minio'
-    restart: unless-stopped                                              # 指定容器退出后的重启策略为始终重启，但是不考虑在Docker守护进程启动时就已经停止了的容器
+    restart: unless-stopped                                      # 指定容器退出后的重启策略为始终重启，但是不考虑在Docker守护进程启动时就已经停止了的容器
+    #restart: always
     volumes:                                                     # 数据卷挂载路径设置,将本机目录映射到容器目录
       - "../minio/data:/data"
       - "../minio/minio:/minio"
@@ -155,8 +156,8 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - ../redis/data:/data
-      - ../redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ../docker-data/redis/data:/data
+      - ../docker-data/redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server --appendonly yes  --requirepass idorp123456
     environment:
       - TZ=Asia/Shanghai
@@ -174,9 +175,9 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ../openresty/conf:/etc/nginx/conf.d
-      - ../openresty/data:/data
-      - ../openresty/logs:/usr/local/openresty/nginx/logs
+      - ../docker-data/openresty/conf:/etc/nginx/conf.d
+      - ../docker-data/openresty/data:/data
+      - ../docker-data/openresty/logs:/usr/local/openresty/nginx/logs
     networks:
       - tt-net
 
@@ -190,7 +191,7 @@ services:
       - 8093:8083
       - 18083:18083
     volumes:
-      - ../emq/log:/opt/emqx/log
+      - ../docker-data/emq/log:/opt/emqx/log
     networks:
       - tt-net
 
@@ -203,7 +204,7 @@ services:
       - 15672:15672
       - 5672:5672
     volumes:
-      - ../rabbitmq/data:/var/lib/rabbitmq
+      - ../docker-data/rabbitmq/data:/var/lib/rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=root
       - RABBITMQ_DEFAULT_PASS=root
@@ -217,7 +218,7 @@ services:
       - 8802:9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ../dockerManager/data:/data
+      - ../docker-data/dockerManager/data:/data
     networks:
       - tt-net
 
@@ -259,7 +260,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - ../gogs/data:/home/git/gogs-repositories # 数据存储
+      - ../docker-data/gogs/data:/home/git/gogs-repositories # 数据存储
     networks:
       - tt-net
 
@@ -281,7 +282,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.0.22
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     # volumes:
-    # - ../kafka/docker.sock:/var/run/docker.sock
+    # - ../docker-data/kafka/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     depends_on:
       - zookeeper
@@ -300,8 +301,8 @@ services:
       - TB_QUEUE_TYPE=in-memory
       - TZ=Asia/Shanghai
     volumes:
-      - ../thingsboard/data:/data
-      - ../thingsboard/logs:/var/log/thingsboard
+      - ../docker-data/thingsboard/data:/data
+      - ../docker-data/thingsboard/logs:/var/log/thingsboard
 
   elasticsearch:
     image: elasticsearch:6.8.11
@@ -314,7 +315,7 @@ services:
       discovery.zen.minimum_master_nodes: 1
       discovery.zen.ping.unicast.hosts: elasticsearch
     volumes:
-      - ../elasticsearch/data:/usr/share/elasticsearch/data
+      - ../docker-data/elasticsearch/data:/usr/share/elasticsearch/data
     networks:
       - tt-net
 
